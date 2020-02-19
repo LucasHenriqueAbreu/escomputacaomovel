@@ -3,7 +3,6 @@ import 'package:tarefas/models/tarefa.dart';
 
 class Home extends StatefulWidget {
   var tarefas = new List<Tarefa>();
-  var teste = 0;
 
   Home() {
     tarefas = [];
@@ -35,13 +34,11 @@ class _HomeState extends State<Home> {
         itemBuilder: (BuildContext ct, int index) {
           final tarefa = widget.tarefas[index];
           return CheckboxListTile(
+            key: Key(tarefa.pronta.toString()),
             title: Text(tarefa.descricao),
-            key: Key(tarefa.id.toString()),
             value: tarefa.pronta,
             onChanged: (value) {
-              setState(() {
-                tarefa.pronta = value;
-              });
+              tarefa.pronta = value;
             },
           );
         },
