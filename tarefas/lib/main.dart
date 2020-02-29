@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Tarefas',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.teal,
       ),
       home: Home(),
     );

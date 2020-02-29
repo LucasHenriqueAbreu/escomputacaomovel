@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:tarefas/models/tarefa.dart';
+import 'package:tarefas/pages/cadastro.dart';
 
 class Home extends StatefulWidget {
   var tarefas = new List<Tarefa>();
-  var teste = 0;
 
   Home() {
     tarefas = [];
-    tarefas.add(new Tarefa(id: 1, descricao: 'Lavar louça', pronta: true));
-    tarefas.add(new Tarefa(id: 2, descricao: 'Estudar', pronta: false));
-    tarefas.add(new Tarefa(id: 3, descricao: 'Pagar boleto', pronta: false));
   }
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  void _abrirCadastro(BuildContext context) async {
+    final descricao = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Cadastro()),
+    );
+    _addTarefa(descricao);
+  }
+
+  _addTarefa(String descricao) {
+    setState(() {
+      widget.tarefas.add(
+        new Tarefa(
+            id: widget.tarefas.length + 1, descricao: descricao, pronta: false),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +59,12 @@ class _HomeState extends State<Home> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _abrirCadastro(context);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
