@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:marvelcatalogo/consts/consts.dart';
+import 'package:marvelcatalogo/models/character_response.dart';
 import 'package:marvelcatalogo/models/models.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:convert/convert.dart';
@@ -24,11 +25,15 @@ class CharacterService {
         'limit': itensPorPag.toString(),
         'offset': offset.toString()
       };
-      final response = await Dio().get(
+      Response response = await Dio().get(
         url,
         queryParameters: queryParameters,
       );
-      print(response);
+
+      final json = jsonDecode(response.toString());
+      CharacterDataWrapper characterDataWrapper =
+          CharacterDataWrapper.fromJson(json);
+      return characterDataWrapper.data.characters;
     } catch (e) {
       print(e);
     }
