@@ -9,7 +9,7 @@ import 'package:convert/convert.dart';
 
 class CharacterService {
   final url = ConstsAPI.MARVEL_API_URL + '/v1/public/characters';
-  final itensPorPag = 50;
+  final itensPorPag = 100;
   final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
 
   Future<List<Character>> getCharacterList() async {

@@ -28,6 +28,7 @@ class _HomeState extends State<Home> {
         title: Text('Marvel catálogo'),
       ),
       body: Container(
+        decoration: BoxDecoration(color: Colors.grey[100]),
         child: characters.length > 0
             ? _criaLista(context, characters)
             : _criaLoader(),
@@ -45,15 +46,36 @@ class _HomeState extends State<Home> {
     return ListView.builder(
       itemCount: characters.length,
       itemBuilder: (context, index) {
-        Character character = characters[index]; 
+        Character character = characters[index];
         return _criaCard(character);
       },
     );
   }
 
   Widget _criaCard(Character character) {
-    return Card(
-
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Card(
+        child: Column(
+          children: <Widget>[
+            FadeInImage.assetNetwork(
+              placeholder: 'assets/images/placeholder.png',
+              image: character.thumbnail.path +
+                  '.' +
+                  character.thumbnail.extension,
+            ),
+            ListTile(
+              // leading: Icon(Icons.library_music),
+              title: Text(character.name),
+              subtitle: Text(character.description),
+              trailing: IconButton(
+                icon: Icon(Icons.star),
+                onPressed: () => print('Gostou'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

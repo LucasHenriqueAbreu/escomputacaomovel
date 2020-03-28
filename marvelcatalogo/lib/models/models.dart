@@ -2,41 +2,38 @@ class Character {
   int id;
   String name;
   String description;
-  Image thumbnail;
+  Thumbnail thumbnail;
 
-  Character({
-    this.id, 
-    this.name,
-    this.description,
-    this.thumbnail
-  });
+  Character({this.id, this.name, this.description, this.thumbnail});
 
   Character.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    description = json['deion'];
+    description =
+        json['description'] == null || json['description'].toString().isEmpty
+            ? 'Não possui descrição'
+            : json['description'];
     thumbnail = json['thumbnail'] != null
-        ? new Image.fromJson(json['thumbnail'])
+        ? new Thumbnail.fromJson(json['thumbnail'])
         : null;
   }
-
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
-    data['deion'] = this.description;
+    data['description'] = this.description;
     return data;
   }
 }
 
-class Image {
+class Thumbnail {
   String path;
   String extension;
 
-  Image({this.path, this.extension});
+  Thumbnail({this.path, this.extension});
 
-  Image.fromJson(Map<String, dynamic> json) {
+  Thumbnail.fromJson(Map<String, dynamic> json) {
     path = json['path'];
     extension = json['extension'];
   }
