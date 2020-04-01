@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marvelcatalogo/pages/detalhes.dart';
 import 'package:marvelcatalogo/pages/home.dart';
 
 void main() => runApp(MyApp());
@@ -12,7 +13,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: Home(),
+      routes: {
+        '/': (context) => Home(),
+        '/detalhes': (context) => Detalhes(
+              character: ModalRoute.of(context).settings.arguments,
+            ),
+      },
+      initialRoute: '/',
     );
   }
 }

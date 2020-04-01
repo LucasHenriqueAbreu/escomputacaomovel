@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marvelcatalogo/models/models.dart';
+import 'package:marvelcatalogo/pages/detalhes.dart';
 import 'package:marvelcatalogo/services/character_service.dart';
 
 class Home extends StatefulWidget {
@@ -53,19 +54,19 @@ class _HomeState extends State<Home> {
   }
 
   Widget _criaCard(Character character) {
-    return Padding(
-      padding: EdgeInsets.all(8.0),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed('/detalhes', arguments: character);
+      },
       child: Card(
         child: Column(
           children: <Widget>[
             FadeInImage.assetNetwork(
               placeholder: 'assets/images/placeholder.png',
-              image: character.thumbnail.path +
-                  '.' +
-                  character.thumbnail.extension,
+              image:
+                  '${character.thumbnail.path}.${character.thumbnail.extension}',
             ),
             ListTile(
-              // leading: Icon(Icons.library_music),
               title: Text(character.name),
               subtitle: Text(character.description),
               trailing: IconButton(
