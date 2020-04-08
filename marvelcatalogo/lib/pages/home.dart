@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marvelcatalogo/models/models.dart';
-import 'package:marvelcatalogo/pages/detalhes.dart';
 import 'package:marvelcatalogo/services/character_service.dart';
+import 'package:marvelcatalogo/shared/my_drawer.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,6 +25,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MyDrawer(),
       appBar: AppBar(
         title: Text('Marvel catálogo'),
       ),
