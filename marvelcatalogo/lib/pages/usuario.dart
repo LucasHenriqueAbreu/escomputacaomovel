@@ -20,6 +20,7 @@ class _UsuarioState extends State<Usuario> {
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 _criaTextFormField(
                   'Username',
@@ -42,8 +43,15 @@ class _UsuarioState extends State<Usuario> {
                   hintText: 'Informe sua chave privada da conta Marvel Dev',
                   validator: _validaChavePrivada,
                 ),
+                SizedBox(
+                  height: 20.0,
+                ),
                 RaisedButton(
-                  child: Text('Salvar'),
+                  child: Text(
+                    'Salvar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  color: Theme.of(context).primaryColor,
                   onPressed: () {
                     if (_formGlobalKey.currentState.validate()) {
                       _showMsg(context, 'Teste');
