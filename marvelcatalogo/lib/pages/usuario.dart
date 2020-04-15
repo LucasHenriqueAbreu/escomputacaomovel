@@ -7,6 +7,23 @@ class Usuario extends StatefulWidget {
 
 class _UsuarioState extends State<Usuario> {
   final _formGlobalKey = GlobalKey<FormState>();
+  String _username;
+  final _tfPublicKeyController = TextEditingController();
+
+  @override
+  void initState() {
+    _tfPublicKeyController.addListener(() {
+      print('Passsou aqui');
+      print(_tfPublicKeyController.text);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tfPublicKeyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +43,7 @@ class _UsuarioState extends State<Usuario> {
                   'Username',
                   hintText: 'Informe o username da sua conta Marvel Dev',
                   validator: _validaUserName,
+                  saved: (value) => _username = value,
                 ),
                 SizedBox(
                   height: 20.0,
@@ -34,6 +52,7 @@ class _UsuarioState extends State<Usuario> {
                 _criaTextFormField(
                   'Public Key',
                   validator: _validaChavePublica,
+                  controller: _tfPublicKeyController,
                 ),
                 SizedBox(
                   height: 20.0,
@@ -53,8 +72,15 @@ class _UsuarioState extends State<Usuario> {
                   ),
                   color: Theme.of(context).primaryColor,
                   onPressed: () {
-                    if (_formGlobalKey.currentState.validate()) {
-                      _showMsg(context, 'Teste');
+                    bool formValido = _formGlobalKey.currentState.validate();
+                    print(_username);
+                    if (formValido) {
+                      print('Form válido');
+                      _formGlobalKey.currentState.save();
+                      print(_username);
+                      print(_tfPublicKeyController.text);
+                    } else {
+                      print('Form inválido');
                     }
                   },
                 )
@@ -67,14 +93,19 @@ class _UsuarioState extends State<Usuario> {
   }
 
   TextFormField _criaTextFormField(String labelText,
-      {String hintText, Function validator}) {
+      {String hintText,
+      Function validator,
+      Function saved,
+      TextEditingController controller}) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
         border: OutlineInputBorder(),
       ),
       validator: validator,
+      onSaved: saved,
     );
   }
 
@@ -103,12 +134,5 @@ class _UsuarioState extends State<Usuario> {
       return 'Tem certeza que está correta? Geralmente este campo é bem maior!';
     }
     return null;
-  }
-
-  _showMsg(BuildContext context, String msg) {
-    final snackbar = SnackBar(
-      content: Text(msg),
-    );
-    Scaffold.of(context).showSnackBar(snackbar);
   }
 }
