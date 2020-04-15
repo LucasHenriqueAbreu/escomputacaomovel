@@ -19,6 +19,7 @@ class ImageAux extends StatelessWidget {
         return FadeInImage.assetNetwork(
           placeholder: 'assets/images/placeholder.png',
           image: url,
+          fit: BoxFit.cover,
         );
       }
     } catch (e) {
