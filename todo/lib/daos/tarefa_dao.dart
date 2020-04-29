@@ -23,4 +23,18 @@ class TarefaDao {
     var dataBase = await _criaOuIniciaBancoDeDados();
     return dataBase.insert('tarefa', tarefa.toJson());
   }
+
+  Future<List<Tarefa>> list() async {
+    var dataBase = await _criaOuIniciaBancoDeDados();
+    var result = await dataBase.query('tarefa');
+    List<Tarefa> tarefas = List<Tarefa>();
+    for (var i = 0; i < result.length; i++) {
+      tarefas.add(Tarefa.fromJson(result[i]));
+    }
+    return tarefas;
+  }
+
+  int soma(int a, int b) {
+    return a + b;
+  }
 }
