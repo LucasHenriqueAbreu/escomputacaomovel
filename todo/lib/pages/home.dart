@@ -35,15 +35,20 @@ class _HomeState extends State<Home> {
 
   ///Método responsável por criar a lista de tarefas (ListView).
   Widget _criaLista() {
-    return ListView.builder(
-      ///Parâmetro da função builder do ListView, responsável
-      ///por dizer quantos itens a listava vai possuir, assim
-      ///o ListView sabe quantas vezes vai repetir o itemBuilder.
-      itemCount: tarefas.length,
+    return RefreshIndicator(
+      onRefresh: () async {
+        _buscaTarefas();
+      },
+      child: ListView.builder(
+        ///Parâmetro da função builder do ListView, responsável
+        ///por dizer quantos itens a listava vai possuir, assim
+        ///o ListView sabe quantas vezes vai repetir o itemBuilder.
+        itemCount: tarefas.length,
 
-      ///Parâmetro da função builder, responsável por
-      ///criar cada item da lista de tarefas.
-      itemBuilder: _criaItemBuilder,
+        ///Parâmetro da função builder, responsável por
+        ///criar cada item da lista de tarefas.
+        itemBuilder: _criaItemBuilder,
+      ),
     );
   }
 
@@ -61,6 +66,7 @@ class _HomeState extends State<Home> {
       title: Text(tarefa.descricao),
       value: tarefa.pronta,
       onChanged: (value) {
+        tarefaDao.update(tarefa);
         setState(() {
           tarefa.pronta = value;
         });

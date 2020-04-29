@@ -34,7 +34,9 @@ class TarefaDao {
     return tarefas;
   }
 
-  int soma(int a, int b) {
-    return a + b;
+  Future<int> update(Tarefa tarefa) async {
+    var dataBase = await _criaOuIniciaBancoDeDados();
+    return await dataBase.update('tarefa', tarefa.toJson(),
+        where: 'id = ? ', whereArgs: [tarefa.id]);
   }
 }
