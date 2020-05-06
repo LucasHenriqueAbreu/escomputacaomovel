@@ -57,32 +57,81 @@ class _HomeState extends State<Home> {
   ///criar cada item da lista de tarefas.
   Widget _criaItemBuilder(BuildContext context, int index) {
     final tarefa = tarefas[index];
-    return _criaItemLista(tarefa);
+    return Dismissible(
+      key: Key(tarefa.id.toString()),
+      child: _criaItemLista(tarefa),
+      onDismissed: (DismissDirection dismissDirection) {
+        if (dismissDirection == DismissDirection.endToStart) {
+          tarefaDao.delete(tarefa.id);
+        } else if (dismissDirection == DismissDirection.startToEnd) {
+          tarefa.pronta = true;
+          tarefaDao.update(tarefa);
+        }
+        tarefas.removeAt(index);
+      },
+      background: Container(
+        color: Colors.green,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.done,
+                color: Colors.white,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 3),
+                child: Text(
+                  'Tarefa pronta...',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            ],
+          ),
+        ),
+        alignment: Alignment.centerLeft,
+      ),
+      secondaryBackground: Container(
+        color: Colors.red,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 3),
+              child: Text(
+                'Removendo tarefa...',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerRight,
+      ),
+    );
   }
 
   /// Método responsável por criar o item do listView
   Widget _criaItemLista(Tarefa tarefa) {
-    return CheckboxListTile(
+    return ListTile(
       title: Text(tarefa.descricao),
-      value: tarefa.pronta,
-      onChanged: (value) {
-        tarefaDao.update(tarefa);
-        setState(() {
-          tarefa.pronta = value;
-        });
-      },
+      subtitle: Text(tarefa.descricao),
     );
   }
 
   /// Método responsável por abriro nosso dialog de cadadastro.
-  void _abrirTelaCadastro() {
-    Navigator.of(context).push(
+  void _abrirTelaCadastro() async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) {
           return CadastroTarefa();
         },
       ),
     );
+    _buscaTarefas();
   }
 
   // Busca as tarefas no banco de dados

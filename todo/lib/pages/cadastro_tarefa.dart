@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:todo/daos/tarefa_dao.dart';
 import 'package:todo/models/tarefa.dart';
 
-class CadastroTarefa extends StatelessWidget {
+class CadastroTarefa extends StatefulWidget {
+  @override
+  _CadastroTarefaState createState() => _CadastroTarefaState();
+}
+
+class _CadastroTarefaState extends State<CadastroTarefa> {
   final _form = GlobalKey<FormState>();
   Tarefa tarefa = Tarefa();
   TarefaDao tarefaDao = TarefaDao();
+  bool _continuarCadastrando = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +34,7 @@ class CadastroTarefa extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           _criaInputDescricao(),
-          SizedBox(
-            height: 10,
-          ),
+          _criaCheckBoxContinuarSalvando(),
           _criaBotaoSalvar(),
         ],
       ),
@@ -58,21 +62,52 @@ class CadastroTarefa extends StatelessWidget {
   }
 
   Widget _criaBotaoSalvar() {
-    return RaisedButton(
-      child: Text(
-        'Salvar',
-      ),
-      onPressed: _salvar,
+    return Builder(
+      builder: (BuildContext context) {
+        return ButtonTheme(
+          height: 50,
+          child: RaisedButton(
+            color: Theme.of(context).primaryColor,
+            child: Text(
+              'Salvar',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              _salvar(context);
+            },
+          ),
+        );
+      },
     );
   }
 
-  void _salvar() async {
+  void _salvar(BuildContext context) async {
     var formValido = _form.currentState.validate();
     if (formValido) {
       _form.currentState.save();
       tarefa.pronta = false;
       await tarefaDao.create(tarefa);
       _form.currentState.reset();
+      final _snackBar = SnackBar(
+        content: Text('Tarefa cadastrada com sucesso'),
+      );
+      Scaffold.of(context).showSnackBar(_snackBar);
+      if (!_continuarCadastrando) {
+        Navigator.pop(context);
+      }
     }
+  }
+
+  _criaCheckBoxContinuarSalvando() {
+    return CheckboxListTile(
+      onChanged: (bool value) {
+        setState(() {
+          _continuarCadastrando = value;
+        });
+      },
+      value: _continuarCadastrando,
+      title: Text('Deseja continuar cadastrando?'),
+      subtitle: Text('Desmarque para voltar à lista ao salvar'),
+    );
   }
 }
