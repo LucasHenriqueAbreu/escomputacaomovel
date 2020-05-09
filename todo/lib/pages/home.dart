@@ -57,61 +57,63 @@ class _HomeState extends State<Home> {
   ///criar cada item da lista de tarefas.
   Widget _criaItemBuilder(BuildContext context, int index) {
     final tarefa = tarefas[index];
-    return Dismissible(
-      key: Key(tarefa.id.toString()),
-      child: _criaItemLista(tarefa),
-      onDismissed: (DismissDirection dismissDirection) {
-        if (dismissDirection == DismissDirection.endToStart) {
-          tarefaDao.delete(tarefa.id);
-        } else if (dismissDirection == DismissDirection.startToEnd) {
-          tarefa.pronta = true;
-          tarefaDao.update(tarefa);
-        }
-        tarefas.removeAt(index);
-      },
-      background: Container(
-        color: Colors.green,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+    return Builder(builder: (BuildContext context) {
+      return Dismissible(
+        key: Key(tarefa.id.toString()),
+        child: _criaItemLista(tarefa),
+        onDismissed: (DismissDirection dismissDirection) {
+          if (dismissDirection == DismissDirection.endToStart) {
+            _removeTarefa(tarefa, index, context);
+          } else if (dismissDirection == DismissDirection.startToEnd) {
+            tarefa.pronta = true;
+            tarefaDao.update(tarefa);
+          }
+          tarefas.removeAt(index);
+        },
+        background: Container(
+          color: Colors.green,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.done,
+                  color: Colors.white,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 3),
+                  child: Text(
+                    'Tarefa pronta...',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          ),
+          alignment: Alignment.centerLeft,
+        ),
+        secondaryBackground: Container(
+          color: Colors.red,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Icon(
-                Icons.done,
-                color: Colors.white,
-              ),
               Padding(
-                padding: const EdgeInsets.only(left: 3),
+                padding: const EdgeInsets.only(right: 3),
                 child: Text(
-                  'Tarefa pronta...',
+                  'Removendo tarefa...',
                   style: TextStyle(color: Colors.white),
                 ),
-              )
+              ),
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ],
           ),
+          alignment: Alignment.centerRight,
         ),
-        alignment: Alignment.centerLeft,
-      ),
-      secondaryBackground: Container(
-        color: Colors.red,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 3),
-              child: Text(
-                'Removendo tarefa...',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-          ],
-        ),
-        alignment: Alignment.centerRight,
-      ),
-    );
+      );
+    });
   }
 
   /// Método responsável por criar o item do listView
@@ -139,6 +141,31 @@ class _HomeState extends State<Home> {
     var result = await tarefaDao.list();
     setState(() {
       tarefas = result;
+    });
+  }
+
+  void _removeTarefa(Tarefa tarefa, int index, BuildContext context) {
+    setState(() {
+      tarefas.removeAt(index);
+    });
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 5),
+      content: Text(
+        'Você removeu a tarefa ${tarefa.descricao}',
+        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+      ),
+      action: SnackBarAction(
+          label: 'Desfazer',
+          onPressed: () {
+            setState(() {
+              tarefas.insert(index, tarefa);
+            });
+          }),
+    );
+    Scaffold.of(context).showSnackBar(snackBar).closed.then((reason) {
+      if (reason != SnackBarClosedReason.action) {
+        tarefaDao.delete(tarefa.id);
+      }
     });
   }
 }

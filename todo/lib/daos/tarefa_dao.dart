@@ -36,13 +36,12 @@ class TarefaDao {
 
   Future<int> update(Tarefa tarefa) async {
     var dataBase = await _criaOuIniciaBancoDeDados();
-    return await dataBase.update('tarefa', tarefa.toJson(),
+    return dataBase.update('tarefa', tarefa.toJson(),
         where: 'id = ? ', whereArgs: [tarefa.id]);
   }
 
-  Future<dynamic> delete(int idTarefa) async {
+  Future<int> delete(int idTarefa) async {
     var dataBase = await _criaOuIniciaBancoDeDados();
-    return await dataBase
-        .delete('tarefa', where: 'id = ?', whereArgs: [idTarefa]);
+    return dataBase.delete('tarefa', where: 'id = ?', whereArgs: [idTarefa]);
   }
 }
