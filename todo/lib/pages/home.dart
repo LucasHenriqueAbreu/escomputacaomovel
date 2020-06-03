@@ -24,6 +24,11 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('TODO - app'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.mobile_screen_share),
+          )
+        ],
       ),
       body: _criaLista(),
       floatingActionButton: FloatingActionButton(
@@ -65,8 +70,7 @@ class _HomeState extends State<Home> {
           if (dismissDirection == DismissDirection.endToStart) {
             _removeTarefa(tarefa, index, context);
           } else if (dismissDirection == DismissDirection.startToEnd) {
-            tarefa.pronta = true;
-            tarefaDao.update(tarefa);
+            _finalizaTarefa(tarefa, index, context);
           }
           tarefas.removeAt(index);
         },
@@ -165,6 +169,32 @@ class _HomeState extends State<Home> {
     Scaffold.of(context).showSnackBar(snackBar).closed.then((reason) {
       if (reason != SnackBarClosedReason.action) {
         tarefaDao.delete(tarefa.id);
+      }
+    });
+  }
+
+  void _finalizaTarefa(Tarefa tarefa, int index, BuildContext context) {
+    setState(() {
+      tarefas.removeAt(index);
+    });
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 5),
+      content: Text(
+        'Você concluiu a tarefa ${tarefa.descricao}',
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+      ),
+      action: SnackBarAction(
+          label: 'Desfazer',
+          onPressed: () {
+            setState(() {
+              tarefas.insert(index, tarefa);
+            });
+          }),
+    );
+    Scaffold.of(context).showSnackBar(snackBar).closed.then((reason) {
+      if (reason != SnackBarClosedReason.action) {
+        tarefa.pronta = true;
+        tarefaDao.update(tarefa);
       }
     });
   }
