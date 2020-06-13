@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:jogo_da_memoria/models/carta.dart';
 
@@ -26,9 +29,9 @@ class _HomePageState extends State<HomePage> {
     Carta(id: 16, grupo: 8, cor: Colors.green)
   ];
 
-  List<Carta> cartasSelecionadas = [];
-
   int _ponto = 0;
+
+  Map<int, List<Carta>> cartasAgrupadasPorGrupo = Map<int, List<Carta>>();
 
   @override
   void initState() {
@@ -41,7 +44,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(244, 243, 243, 1),
       appBar: AppBar(
-        title: Text('Jogo da memória'),
+        title:
+            Text('Jogo da memória. Pontos: ${cartasAgrupadasPorGrupo.length}'),
       ),
       body: _criaTabuleiroCartas(),
     );
@@ -70,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       onTap: () => _mostraCarta(carta),
       child: Card(
         child: AnimatedContainer(
-          color: carta.selecionada ? carta.cor : Colors.red,
+          color: carta.visivel ? carta.cor : Colors.red,
           duration: Duration(milliseconds: 400),
           child: Center(
             child: _criaConteudoCarta(carta),
@@ -81,7 +85,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _criaConteudoCarta(Carta carta) {
-    if (carta.selecionada) {
+    if (carta.visivel) {
       return Text(
         carta.grupo.toString(),
         style: TextStyle(
@@ -95,30 +99,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   _mostraCarta(Carta carta) {
-    if (cartasSelecionadas.length == 2) {
-      _verificaAcerto();
-    }
     setState(() {
-      carta.selecionada = !carta.selecionada;
+      carta.visivel = !carta.visivel;
     });
-    cartasSelecionadas.add(carta);
+    _verificaAcerto();
   }
 
-  _verificaAcerto() {
-    if (cartasSelecionadas[0].grupo == cartasSelecionadas[1].grupo) {
+  void _verificaAcerto() {
+    List<Carta> cartasVisiveis =
+        cartas.where((carta) => carta.visivel).toList();
+    if (cartasVisiveis.length >= 2) {
       setState(() {
-        _ponto += 1;
+        cartasAgrupadasPorGrupo =
+            groupBy(cartasVisiveis, (Carta carta) => carta.grupo);
       });
-      _validaVitoria();
-    } else {
-      cartasSelecionadas[0].selecionada = false;
-      cartasSelecionadas[1].selecionada = false;
+
+      List<Carta> cartasIncorretas = [];
+      cartasAgrupadasPorGrupo.forEach((key, value) {
+        if (value.length < 2) {
+          cartasIncorretas.add(value[0]);
+        }
+      });
+      if (cartasIncorretas.length >= 2) {
+        _escondeCartas(cartasIncorretas);
+      }
     }
-    cartasSelecionadas = [];
   }
 
   void _validaVitoria() {
-    if (_ponto == 8) {
+    if (cartasAgrupadasPorGrupo.length == 8) {
       _mostraMsgVitoria();
     }
   }
@@ -128,7 +137,7 @@ class _HomePageState extends State<HomePage> {
       _ponto = 0;
       cartas.shuffle();
       for (var i = 0; i < cartas.length; i++) {
-        cartas[i].selecionada = false;
+        cartas[i].visivel = false;
       }
     });
   }
@@ -166,5 +175,15 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void _escondeCartas(List<Carta> value) {
+    Timer(Duration(seconds: 2), () {
+      for (var i = 0; i < value.length; i++) {
+        setState(() {
+          value[i].visivel = false;
+        });
+      }
+    });
   }
 }
