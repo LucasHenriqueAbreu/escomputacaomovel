@@ -29,9 +29,8 @@ class _HomePageState extends State<HomePage> {
     Carta(id: 16, grupo: 8, cor: Colors.green)
   ];
 
-  int _ponto = 0;
-
   Map<int, List<Carta>> cartasAgrupadasPorGrupo = Map<int, List<Carta>>();
+  bool aguardandoCartasErradas = false;
 
   @override
   void initState() {
@@ -71,7 +70,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _criaCarta(Carta carta) {
     return GestureDetector(
-      onTap: () => _mostraCarta(carta),
+      onTap: !aguardandoCartasErradas && !carta.visivel
+          ? () => _mostraCarta(carta)
+          : null,
       child: Card(
         child: AnimatedContainer(
           color: carta.visivel ? carta.cor : Colors.red,
@@ -106,84 +107,58 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _verificaAcerto() {
-    List<Carta> cartasVisiveis =
-        cartas.where((carta) => carta.visivel).toList();
+    List<Carta> cartasVisiveis = _getCartasVisiveis();
     if (cartasVisiveis.length >= 2) {
-      setState(() {
-        cartasAgrupadasPorGrupo =
-            groupBy(cartasVisiveis, (Carta carta) => carta.grupo);
-      });
-
-      List<Carta> cartasIncorretas = [];
-      cartasAgrupadasPorGrupo.forEach((key, value) {
-        if (value.length < 2) {
-          cartasIncorretas.add(value[0]);
-        }
-      });
+      cartasAgrupadasPorGrupo = _getCartasAgrupadas(cartasVisiveis);
+      List<Carta> cartasIncorretas =
+          _getCartasIcorretas(cartasAgrupadasPorGrupo);
       if (cartasIncorretas.length >= 2) {
         _escondeCartas(cartasIncorretas);
+      } else {
+        _verificaVitoria();
       }
     }
-  }
-
-  void _validaVitoria() {
-    if (cartasAgrupadasPorGrupo.length == 8) {
-      _mostraMsgVitoria();
-    }
-  }
-
-  void _limpaTabuleiro() {
-    setState(() {
-      _ponto = 0;
-      cartas.shuffle();
-      for (var i = 0; i < cartas.length; i++) {
-        cartas[i].visivel = false;
-      }
-    });
-  }
-
-  void _mostraMsgVitoria() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Vitória'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Você acertou todas as cartas.'),
-                Text('Deseja jogar novamente?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Não'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: Text('Sim'),
-              onPressed: () {
-                _limpaTabuleiro();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _escondeCartas(List<Carta> value) {
-    Timer(Duration(seconds: 2), () {
+    setState(() {
+      aguardandoCartasErradas = true;
+    });
+    Timer(Duration(seconds: 1), () {
       for (var i = 0; i < value.length; i++) {
         setState(() {
           value[i].visivel = false;
         });
       }
+
+      setState(() {
+        aguardandoCartasErradas = false;
+      });
     });
+  }
+
+  List<Carta> _getCartasVisiveis() {
+    return cartas.where((carta) => carta.visivel).toList();
+  }
+
+  Map<int, List<Carta>> _getCartasAgrupadas(List<Carta> cartas) {
+    return groupBy(cartas, (Carta carta) => carta.grupo);
+  }
+
+  List<Carta> _getCartasIcorretas(
+      Map<int, List<Carta>> cartasAgrupadasPorGrupo) {
+    List<Carta> cartasIncorretas = [];
+    cartasAgrupadasPorGrupo.forEach((key, value) {
+      if (value.length < 2) {
+        cartasIncorretas.add(value[0]);
+      }
+    });
+    return cartasIncorretas;
+  }
+
+  void _verificaVitoria() {
+    if (_getCartasVisiveis().length == 16) {
+      print('Vitória!!!!');
+    }
   }
 }
