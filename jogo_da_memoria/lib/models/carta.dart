@@ -5,6 +5,7 @@ class Carta {
   int grupo;
   bool visivel;
   Color cor;
+  String imagem;
 
-  Carta({this.id, this.grupo, this.visivel = false, this.cor});
+  Carta({this.id, this.grupo, this.visivel = false, this.cor, this.imagem});
 }

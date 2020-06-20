@@ -11,22 +11,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Carta> cartas = [
-    Carta(id: 1, grupo: 1, cor: Colors.amber),
-    Carta(id: 2, grupo: 1, cor: Colors.amber),
-    Carta(id: 3, grupo: 2, cor: Colors.blue),
-    Carta(id: 4, grupo: 2, cor: Colors.blue),
-    Carta(id: 5, grupo: 3, cor: Colors.orange),
-    Carta(id: 6, grupo: 3, cor: Colors.orange),
-    Carta(id: 7, grupo: 4, cor: Colors.brown),
-    Carta(id: 8, grupo: 4, cor: Colors.brown),
-    Carta(id: 9, grupo: 5, cor: Colors.teal),
-    Carta(id: 10, grupo: 5, cor: Colors.teal),
-    Carta(id: 11, grupo: 6, cor: Colors.cyan),
-    Carta(id: 12, grupo: 6, cor: Colors.cyan),
-    Carta(id: 13, grupo: 7, cor: Colors.black),
-    Carta(id: 14, grupo: 7, cor: Colors.black),
-    Carta(id: 15, grupo: 8, cor: Colors.green),
-    Carta(id: 16, grupo: 8, cor: Colors.green)
+    Carta(id: 1, grupo: 1, cor: Colors.amber, imagem: 'assets/ring.jpg'),
+    Carta(id: 2, grupo: 1, cor: Colors.amber, imagem: 'assets/ring.jpg'),
+    Carta(id: 3, grupo: 2, cor: Colors.blue, imagem: 'assets/ring.jpg'),
+    Carta(id: 4, grupo: 2, cor: Colors.blue, imagem: 'assets/ring.jpg'),
+    Carta(id: 5, grupo: 3, cor: Colors.orange, imagem: 'assets/ring.jpg'),
+    Carta(id: 6, grupo: 3, cor: Colors.orange, imagem: 'assets/ring.jpg'),
+    Carta(id: 7, grupo: 4, cor: Colors.brown, imagem: 'assets/ring.jpg'),
+    Carta(id: 8, grupo: 4, cor: Colors.brown, imagem: 'assets/ring.jpg'),
+    Carta(id: 9, grupo: 5, cor: Colors.teal, imagem: 'assets/ring.jpg'),
+    Carta(id: 10, grupo: 5, cor: Colors.teal, imagem: 'assets/ring.jpg'),
+    Carta(id: 11, grupo: 6, cor: Colors.cyan, imagem: 'assets/ring.jpg'),
+    Carta(id: 12, grupo: 6, cor: Colors.cyan, imagem: 'assets/ring.jpg'),
+    Carta(id: 13, grupo: 7, cor: Colors.black, imagem: 'assets/ring.jpg'),
+    Carta(id: 14, grupo: 7, cor: Colors.black, imagem: 'assets/ring.jpg'),
+    Carta(id: 15, grupo: 8, cor: Colors.green, imagem: 'assets/ring.jpg'),
+    Carta(id: 16, grupo: 8, cor: Colors.green, imagem: 'assets/ring.jpg')
   ];
 
   Map<int, List<Carta>> cartasAgrupadasPorGrupo = Map<int, List<Carta>>();
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _criaTabuleiroCartas() {
     return GridView.count(
-      padding: EdgeInsets.all(20.0),
+      padding: EdgeInsets.all(5.0),
       crossAxisCount: 4,
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
@@ -61,11 +61,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> _criaListaCartas() {
-    List<Widget> resposta = [];
-    for (var i = 0; i < cartas.length; i++) {
-      resposta.add(_criaCarta(cartas[i]));
-    }
-    return resposta;
+    return cartas.map((Carta carta) => _criaCarta(carta)).toList();
   }
 
   Widget _criaCarta(Carta carta) {
@@ -75,11 +71,9 @@ class _HomePageState extends State<HomePage> {
           : null,
       child: Card(
         child: AnimatedContainer(
-          color: carta.visivel ? carta.cor : Colors.red,
+          color: carta.visivel ? carta.cor : Colors.grey,
           duration: Duration(milliseconds: 400),
-          child: Center(
-            child: _criaConteudoCarta(carta),
-          ),
+          child: _criaConteudoCarta(carta),
         ),
       ),
     );
@@ -87,12 +81,16 @@ class _HomePageState extends State<HomePage> {
 
   Widget _criaConteudoCarta(Carta carta) {
     if (carta.visivel) {
-      return Text(
-        carta.grupo.toString(),
-        style: TextStyle(
-          fontSize: 20,
-          color: Colors.white,
-        ),
+      // return Text(
+      //   carta.grupo.toString(),
+      //   style: TextStyle(
+      //     fontSize: 20,
+      //     color: Colors.white,
+      //   ),
+      // );
+      return Image.asset(
+        carta.imagem,
+        fit: BoxFit.cover,
       );
     } else {
       return Container();
